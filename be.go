@@ -8,5 +8,8 @@ import (
 )
 
 func BackendServer(w http.ResponseWriter, r *http.Request) {
+	// loadresponse := LoadBalancer(w, r)
+	// io.WriteString(os.Stdout, response)
 	fmt.Println("Hello World")
+
 }
