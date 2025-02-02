@@ -36,3 +36,7 @@ func MainServer(w http.ResponseWriter, r *http.Request) {
 	response := fmt.Sprintf("Received request from %s. \n%s %s \n Host: %s \n User-Agent: %s", client, r.Method, r.Proto, host, user_agent)
 	io.WriteString(os.Stdout, response)
 }
+
+func SecondServer(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Hello World")
+}
