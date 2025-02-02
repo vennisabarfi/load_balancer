@@ -1,3 +1,4 @@
+// load balancer
 package main
 
 import (
@@ -28,15 +29,11 @@ func getIPAddress(r *http.Request) string {
 }
 
 // main server for load balancer
-func MainServer(w http.ResponseWriter, r *http.Request) {
+func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 	// extract client ip address from parsed_ip
 	client := getIPAddress(r)
 	host := strings.Split(r.Host, ":")[0]
 	user_agent := r.UserAgent()
 	response := fmt.Sprintf("Received request from %s. \n%s %s \n Host: %s \n User-Agent: %s", client, r.Method, r.Proto, host, user_agent)
 	io.WriteString(os.Stdout, response)
-}
-
-func SecondServer(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello World")
 }
