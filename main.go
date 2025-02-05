@@ -11,6 +11,7 @@ import (
 func main() {
 	// main server
 	r := mux.NewRouter()
+
 	r.HandleFunc("/", LoadBalancer).Methods("GET")
 
 	srv1 := &http.Server{
@@ -27,7 +28,7 @@ func main() {
 	srv2 := &http.Server{
 		Handler: s,
 		Addr:    "127.0.0.1:3000",
-		// Good practice: enforce timeouts for servers you create!
+		// server timeouts
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

@@ -46,6 +46,11 @@ func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 
 	response := fmt.Sprintf("Received request from %s. \n%s %s \n Host: %s \n User-Agent: %s", client, r.Method, r.Proto, host, user_agent)
 	// w.WriteHeader(http.StatusOK)
+
+	// create a new request to the backend server
+	serverPort := "3000"
+	requestURL := fmt.Sprintf("http://localhost:%d", serverPort)
+	fmt.Print(requestURL)
 	// print to server and also write response
 	io.WriteString(os.Stdout, response)
 	w.Write([]byte(response))
