@@ -7,12 +7,22 @@ import (
 	"net/http"
 )
 
-func BackendServer(w http.ResponseWriter, r *http.Request) {
+func FirstServer(w http.ResponseWriter, r *http.Request) {
 	// loadresponse := LoadBalancer(w, r)
 	// io.WriteString(os.Stdout, response)
-	backendResponse := "Hello From Backend Server"
+	backendResponse := "Hello From First Backend Server"
 
-	fmt.Println("Hello From Backend Server")
+	fmt.Println("Hello From First Backend Server")
+	w.Write([]byte(backendResponse))
+
+}
+
+func SecondServer(w http.ResponseWriter, r *http.Request) {
+	// loadresponse := LoadBalancer(w, r)
+	// io.WriteString(os.Stdout, response)
+	backendResponse := "Hello From Second Backend Server"
+
+	fmt.Println("Hello From Second Backend Server")
 	w.Write([]byte(backendResponse))
 
 }

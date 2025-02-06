@@ -14,7 +14,7 @@ func main() {
 
 	r.HandleFunc("/", LoadBalancer).Methods("GET")
 
-	srv1 := &http.Server{
+	srv := &http.Server{
 		Handler: r,
 		Addr:    "127.0.0.1:8080",
 		// Good practice: enforce timeouts for servers you create!
@@ -22,30 +22,46 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	s := mux.NewRouter()
-	s.HandleFunc("/", BackendServer).Methods("GET")
+	s1 := mux.NewRouter()
+	s1.HandleFunc("/", FirstServer).Methods("GET")
 
-	srv2 := &http.Server{
-		Handler: s,
+	srv1 := &http.Server{
+		Handler: s1,
 		Addr:    "127.0.0.1:3000",
 		// server timeouts
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+	s2 := mux.NewRouter()
+	s2.HandleFunc("/", SecondServer).Methods("GET")
 
-	// second server. set up a goroutine to use concurrency
+	srv2 := &http.Server{
+		Handler: s2,
+		Addr:    "127.0.0.1:3001",
+		// server timeouts
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	// second server. set up a goroutine to use concurrency. update to wait group.
 
 	go func() {
-		err := srv1.ListenAndServe()
+		err := srv.ListenAndServe()
 		if err != nil {
-			fmt.Println("Error with first server", err)
+			fmt.Println("Error with load balancer server", err)
+		}
+	}()
+	go func() {
+		err := srv2.ListenAndServe()
+		if err != nil {
+			fmt.Println("Error with second server", err)
 		}
 	}()
 
 	// second server starting
-	err := srv2.ListenAndServe()
+	err := srv1.ListenAndServe()
 	if err != nil {
-		fmt.Println("Error with second server", err)
+		fmt.Println("Error with first server", err)
 	}
 
 }
