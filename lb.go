@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 )
 
 // type Response struct {
@@ -33,9 +34,27 @@ func getIPAddress(r *http.Request) string {
 	return parsed_ip
 }
 
-// type Responses struct {
-// 	res string
-// }
+// list of backend servers
+var servers = []string{
+	"http://localhost:3000",
+	"http://localhost:3001",
+	"http://localhost:3002",
+}
+
+// implement round robin algorithm
+//
+//	set up index to keep track of the next server to use
+var currentServerIndex int
+var mu sync.Mutex //help keep concurreny
+func roundRobin() string {
+	mu.Lock()
+	defer mu.Unlock()
+
+	server := servers[currentServerIndex]
+	currentServerIndex = (currentServerIndex + 1) % len(servers)
+	return server
+
+}
 
 // main server for load balancer
 func LoadBalancer(w http.ResponseWriter, r *http.Request) {
@@ -54,8 +73,11 @@ func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 	// requestURL := fmt.Sprintf("http://localhost:%d", serverPort)
 	// fmt.Print(requestURL)
 
+	// get next server in round robin algorithm
+	serverURL := roundRobin()
+
 	// change this to newrequest with context
-	req, err := http.NewRequest("GET", "http://localhost:3000", nil) //method, url and request body
+	req, err := http.NewRequest("GET", serverURL, nil) //method, url and request body
 	if err != nil {
 		log.Println("Error reaching backend server", err)
 	}
@@ -63,7 +85,7 @@ func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("User-Agent", user_agent)
 
 	client := &http.Client{}
-	req.Header.Add("If-None-Match", `W/"wyzzy"`)
+	//req.Header.Add("If-None-Match", `W/"wyzzy"`)
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("Error sending http request to the backend server", err)

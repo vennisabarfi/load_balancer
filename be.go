@@ -26,3 +26,13 @@ func SecondServer(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(backendResponse))
 
 }
+
+func ThirdServer(w http.ResponseWriter, r *http.Request) {
+	// loadresponse := LoadBalancer(w, r)
+	// io.WriteString(os.Stdout, response)
+	backendResponse := "Hello From Third Backend Server"
+
+	fmt.Println("Hello From Third Backend Server")
+	w.Write([]byte(backendResponse))
+
+}

@@ -43,12 +43,29 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
+	s3 := mux.NewRouter()
+	s3.HandleFunc("/", ThirdServer).Methods("GET")
+
+	srv3 := &http.Server{
+		Handler: s3,
+		Addr:    "127.0.0.1:3002",
+		// server timeouts
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
 	// second server. set up a goroutine to use concurrency. update to wait group.
 
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil {
 			fmt.Println("Error with load balancer server", err)
+		}
+	}()
+	go func() {
+		err := srv1.ListenAndServe()
+		if err != nil {
+			fmt.Println("Error with first server", err)
 		}
 	}()
 	go func() {
@@ -59,9 +76,9 @@ func main() {
 	}()
 
 	// second server starting
-	err := srv1.ListenAndServe()
+	err := srv3.ListenAndServe()
 	if err != nil {
-		fmt.Println("Error with first server", err)
+		fmt.Println("Error with third server", err)
 	}
 
 }
