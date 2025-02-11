@@ -46,14 +46,15 @@ var servers = []string{
 //	set up index to keep track of the next server to use
 var currentServerIndex int
 var mu sync.Mutex //help keep concurreny
+
 func roundRobin() string {
 	mu.Lock()
 	defer mu.Unlock()
 
 	server := servers[currentServerIndex]
 	currentServerIndex = (currentServerIndex + 1) % len(servers)
-	return server
 
+	return server
 }
 
 // main server for load balancer
@@ -64,14 +65,6 @@ func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 	user_agent := r.UserAgent()
 
 	response := fmt.Sprintf("Received request from %s. \n%s %s \n Host: %s \n User-Agent: %s", clients, r.Method, r.Proto, host, user_agent)
-	// w.WriteHeader(http.StatusOK)
-
-	// forward request made to load balancer to backend server
-
-	// create a new request/connection to the backend server
-	// serverPort := "3000"
-	// requestURL := fmt.Sprintf("http://localhost:%d", serverPort)
-	// fmt.Print(requestURL)
 
 	// get next server in round robin algorithm
 	serverURL := roundRobin()
@@ -85,7 +78,6 @@ func LoadBalancer(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("User-Agent", user_agent)
 
 	client := &http.Client{}
-	//req.Header.Add("If-None-Match", `W/"wyzzy"`)
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("Error sending http request to the backend server", err)

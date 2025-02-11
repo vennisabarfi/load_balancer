@@ -36,3 +36,13 @@ func ThirdServer(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(backendResponse))
 
 }
+
+func HealthServer(w http.ResponseWriter, r *http.Request) {
+	// loadresponse := LoadBalancer(w, r)
+	// io.WriteString(os.Stdout, response)
+	backendResponse := "Healthy Endpoint Yayy"
+
+	fmt.Println("Healthy Endpoint Yayy")
+	w.Write([]byte(backendResponse))
+
+}
